@@ -1,8 +1,11 @@
+#include <stdlib.h> 
+#include <stdio.h>
+#include <math.h>
+#include "GfxLib.h"
+#include "BmpLib.h"
+#include "ESLib.h"
 
-
-
-int int main(int argc, char const *argv[]) {
+int main(int argc, char const *argv[]) {
   /* code */
   return 0;
 }
-On aime taric
