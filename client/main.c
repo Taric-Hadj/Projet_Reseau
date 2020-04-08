@@ -28,6 +28,15 @@ int int main(int argc, char const *argv[]) {
   socketEcoute = socket(PF_INET, SOCK_STREAM, 0); /* 0 indique que l’on utilisera le
   protocole par défaut associé à SOCK_STREAM soit TCP */
 
+  // Teste la valeur renvoyée par l’appel système socket()
+  if(socketEcoute < 0) /* échec ? */
+  {
+  perror("socket"); // Affiche le message d’erreur
+  exit(-1); // On sort en indiquant un code erreur
+  }
+  printf("Socket créée avec succès ! (%d)\n", socketEcoute);
+
+
 
   return 0;
 }
