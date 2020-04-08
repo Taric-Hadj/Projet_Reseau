@@ -13,6 +13,21 @@
 
 
 int int main(int argc, char const *argv[]) {
-  /* code */
+
+
+  int socketEcoute;
+  struct SOCKADDR_IN pointDeRencontreLocal;
+  socklen_t longueurAdresse;
+  int socketDialogue;
+  struct SOCKADDR_IN pointDeRencontreDistant;
+  char messageEnvoi[LG_MESSAGE]; /* le message de la couche Application ! */
+  char messageRecu[LG_MESSAGE]; /* le message de la couche Application ! */
+  int ecrits, lus; /* nb d’octets ecrits et lus */
+  int retour;
+  // Crée un socket de communication
+  socketEcoute = socket(PF_INET, SOCK_STREAM, 0); /* 0 indique que l’on utilisera le
+  protocole par défaut associé à SOCK_STREAM soit TCP */
+
+
   return 0;
 }
