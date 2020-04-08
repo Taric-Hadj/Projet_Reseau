@@ -8,7 +8,7 @@
 #include <arpa/inet.h> /* pour htons et inet_aton */
 #include <unistd.h> /* pour sleep */
 #include <poll.h>
-#include "server.h"
+#include "fonction.h"
 
 #define PORT IPPORT_USERRESERVED // = 5000
 
