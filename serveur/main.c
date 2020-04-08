@@ -12,7 +12,7 @@
 #include <unistd.h> /* pour sleep */
 
 
-int int main(int argc, char const *argv[]) {
+int main(int argc, char const *argv[]) {
 
 
   int socketEcoute;
