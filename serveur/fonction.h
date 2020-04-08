@@ -2,5 +2,5 @@ struct Client
 {
   char*       pseudo;
   SOCKET      sock;
-  SOCKADDR_IN sin;
+  sockaddr_in sin;
 };
