@@ -8,7 +8,7 @@
 #include <arpa/inet.h> /* pour htons et inet_aton */
 #include <unistd.h> /* pour sleep */
 #include <poll.h>
-#include "server.h"
+#include "fonction.h"
 
 #define PORT IPPORT_USERRESERVED // = 5000
 
@@ -79,6 +79,8 @@ int main()
 
 		nevents = poll(pollfds, nfds, -1);
 		if (nevents > 0) {
+			//poll(poll_list, 2, -1);
+
 			// parcours de pollfds[] à la recherche des revents != 0
 			//
 			// si c'est la socket socketEcoute => accept() + création d'une nouvelle entrée dans la table users[]
