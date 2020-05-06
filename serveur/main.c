@@ -70,43 +70,85 @@ int main()
 
 	// boucle d'attente de connexion : en théorie, un serveur attend indéfiniment !
 	while(1)
-	{
-		int nevents, i, j;
-		int nfds = 0;
+		{
+			int nevents,i,j;
+			int nfds = 0;
 
-		// Liste des sockets à écouter
-		int nevents,i,j;
-		int nfds = 0;
+			// Liste des sockets à écouter
+			// socketEcoute + users[].socket => pollfds[]
+			pollfds[nfds].fd = socketEcoute;
+			pollfds[nfds].events = POLLIN;
+			pollfds[nfds].revents = 0;
+			nfds++;
 
-		// Liste des sockets à écouter
-		pollfds[nfds].fd = socketEcoute;
-		pollfds[nfds].events = POLLIN;
-		pollfds[nfds].revents = 0;
-		nfds++;
+			for(int i = 0 ; i<MAX_USERS;i++){
+				if(users[i].socketClient > 0){
+					pollfds[nfds].fd = users[i].socketClient;
+					pollfds[nfds].events = POLLIN;
+					pollfds[nfds].revents = 0;
+					nfds++;
+					}
+				}
+			nevents = poll(pollfds, nfds, -1);
+			if (nevents > 0) {
+				// parcours de pollfds[] à la recherche des revents != 0
+				for(int j =0;j< nfds;j++){
+					if(pollfds[j].revents != 0){
+						if(j == 0){
+							int i =0;
+							for(i=0;i<MAX_USERS;i++){
+								if(users[i].socketClient == 0){
+									users[i].socketClient = accept(socketEcoute,(struct sockaddr *)&pointDeRencontreDistant, & longueurAdresse);
 
-		for(int i = 0 ; i<MAX_USERS;i++){
-			if(users[i].socket != 0){
-				pollfds[nfds].fd = users[i].socket;
-				pollfds[nfds].events = POLLIN;
-				pollfds[nfds].revents = 0;
-				nfds++;
+									snprintf(users[i].login,50, "user %d",i+1) ;
+									printf("%s s'est connecté\n\n",users[i].login) ;
+									if(users[i].socketClient < 0){
+										perror("accept");
+										close(users[i].socketClient);
+										close(socketEcoute);
+										exit(-4);
+									}
+									break;
+								}
+							}
+							if(i == MAX_USERS)
+							{
+								close(users[i].socketClient);
+								printf("Max d'utilisateur atteint");
+								break;
+							}
+						}
+			else {
+				for(int i=0; i<MAX_USERS;i++){
+					if(pollfds[j].fd == users[i].socketClient){
+						lus = read(users[i].socketClient,messageRecu,LG_MESSAGE*sizeof(char));
+						switch(lus){
+							case -1:
+								perror("read");
+								close(users[i].socketClient);
+								exit(-5);
+							case 0 :
+								fprintf(stderr,"%s s'est déconecté\n\n");
+								close(users[i].socketClient);
+								users[i].socketClient = 0;
+							default:
+								printf("Message reçu de %s: %s (%d octets)\n\n",users[i].login,messageRecu,lus);
+							}
+						}
+					}
 				}
 			}
-		// socketEcoute + users[].socket => pollfds[]
-
-		nevents = poll(pollfds, nfds, -1);
-		if (nevents > 0) {
-			//poll(poll_list, 2, -1);
-
-			// parcours de pollfds[] à la recherche des revents != 0
-			//
-			// si c'est la socket socketEcoute => accept() + création d'une nouvelle entrée dans la table users[]
-			//
-			// sinon c'est une socket client => read() et gestion des erreurs pour le cas de la déconnexion
-		} else {
-			printf("poll() returned %d\n", nevents);
 		}
 	}
+
+
+				// si c'est la socket socketEcoute => accept() + création d'une nouvelle entrée dans la table users[]
+				//
+				// sinon c'est une socket client => read() et gestion des erreurs pour le cas de la déconnexion
+			else {
+				printf("poll() returned %d\n", nevents);
+			}
+		}
 
 	// On ferme la ressource avant de quitter
 	close(socketEcoute);
