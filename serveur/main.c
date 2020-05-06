@@ -75,6 +75,23 @@ int main()
 		int nfds = 0;
 
 		// Liste des sockets à écouter
+		int nevents,i,j;
+		int nfds = 0;
+
+		// Liste des sockets à écouter
+		pollfds[nfds].fd = socketEcoute;
+		pollfds[nfds].events = POLLIN;
+		pollfds[nfds].revents = 0;
+		nfds++;
+
+		for(int i = 0 ; i<MAX_USERS;i++){
+			if(users[i].socket != 0){
+				pollfds[nfds].fd = users[i].socket;
+				pollfds[nfds].events = POLLIN;
+				pollfds[nfds].revents = 0;
+				nfds++;
+				}
+			}
 		// socketEcoute + users[].socket => pollfds[]
 
 		nevents = poll(pollfds, nfds, -1);
