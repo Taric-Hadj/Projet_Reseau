@@ -25,10 +25,10 @@ int main()
 	char messageRecu[LG_MESSAGE]; /* le message de la couche Application ! */
 	int ecrits, lus; /* nb d'octets ecrits et lus */
 	int retour;
-	struct user users[MAX_USERS];
-	struct pollfd pollfds[MAX_USERS + 1];
+	struct Digimon Digimons[MAX_DIGIMON];
+	struct pollfd pollfds[MAX_DIGIMON + 1];
 
-	memset(users, '\0', MAX_USERS*sizeof(struct user));
+	memset(Digimons, '\0', MAX_DIGIMON*sizeof(struct Digimon));
 
 	// Crée un socket de communication
 	socketEcoute = socket(PF_INET, SOCK_STREAM, 0); /* 0 indique que l'on utilisera le protocole par défaut associé à SOCK_STREAM soit TCP */
@@ -71,19 +71,19 @@ int main()
 	// boucle d'attente de connexion : en théorie, un serveur attend indéfiniment !
 	while(1)
 		{
-			int nevents,i,j;
+			int nevents;
 			int nfds = 0;
 
 			// Liste des sockets à écouter
-			// socketEcoute + users[].socket => pollfds[]
+			// socketEcoute + Digimons[].socket => pollfds[]
 			pollfds[nfds].fd = socketEcoute;
 			pollfds[nfds].events = POLLIN;
 			pollfds[nfds].revents = 0;
 			nfds++;
 
-			for(int i = 0 ; i<MAX_USERS;i++){
-				if(users[i].socket > 0){
-					pollfds[nfds].fd = users[i].socket;
+			for(int i = 0 ; i<MAX_DIGIMON;i++){
+				if(Digimons[i].socket > 0){
+					pollfds[nfds].fd = Digimons[i].socket;
 					pollfds[nfds].events = POLLIN;
 					pollfds[nfds].revents = 0;
 					nfds++;
@@ -96,43 +96,43 @@ int main()
 					if(pollfds[j].revents != 0){
 						if(j == 0){
 							int i =0;
-							for(i=0;i<MAX_USERS;i++){
-								if(users[i].socket == 0){
-									users[i].socket = accept(socketEcoute,(struct sockaddr *)&pointDeRencontreDistant, & longueurAdresse);
+							for(i=0;i<MAX_DIGIMON;i++){
+								if(Digimons[i].socket == 0){
+									Digimons[i].socket = accept(socketEcoute,(struct sockaddr *)&pointDeRencontreDistant, & longueurAdresse);
 
-									snprintf(users[i].login,50, "user %d",i+1) ;
-									printf("%s s'est connecté\n\n",users[i].login) ;
-									if(users[i].socket < 0){
+									snprintf(Digimons[i].login,50, "DIGIMON %d",i+1) ;
+									printf("%s s'est connecté\n\n",Digimons[i].login) ;
+									if(Digimons[i].socket < 0){
 										perror("accept");
-										close(users[i].socket);
+										close(Digimons[i].socket);
 										close(socketEcoute);
 										exit(-4);
 									}
 									break;
 								}
 							}
-							if(i == MAX_USERS)
+							if(i == MAX_DIGIMON)
 							{
-								close(users[i].socket);
+								close(Digimons[i].socket);
 								printf("Max d'utilisateur atteint");
 								break;
 							}
 						}
 			else {
-				for(int i=0; i<MAX_USERS;i++){
-					if(pollfds[j].fd == users[i].socket){
-						lus = read(users[i].socket,messageRecu,LG_MESSAGE*sizeof(char));
+				for(int i=0; i<MAX_DIGIMON;i++){
+					if(pollfds[j].fd == Digimons[i].socket){
+						lus = read(Digimons[i].socket,messageRecu,LG_MESSAGE*sizeof(char));
 						switch(lus){
 							case -1:
 								perror("read");
-								close(users[i].socket);
+								close(Digimons[i].socket);
 								exit(-5);
 							case 0 :
 								fprintf(stderr,"%s s'est déconecté\n\n");
-								close(users[i].socket);
-								users[i].socket = 0;
+								close(Digimons[i].socket);
+								Digimons[i].socket = 0;
 							default:
-								printf("Message reçu de %s: %s (%d octets)\n\n",users[i].login,messageRecu,lus);
+								printf("Message reçu de %s: %s (%d octets)\n\n",Digimons[i].login,messageRecu,lus);
 							}
 						}
 					}
@@ -142,7 +142,7 @@ int main()
 	}
 
 
-				// si c'est la socket socketEcoute => accept() + création d'une nouvelle entrée dans la table users[]
+				// si c'est la socket socketEcoute => accept() + création d'une nouvelle entrée dans la table Digimons[]
 				//
 				// sinon c'est une socket client => read() et gestion des erreurs pour le cas de la déconnexion
 			else {
