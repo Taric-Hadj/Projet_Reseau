@@ -82,8 +82,8 @@ int main()
 			nfds++;
 
 			for(int i = 0 ; i<MAX_USERS;i++){
-				if(users[i].socketClient > 0){
-					pollfds[nfds].fd = users[i].socketClient;
+				if(users[i].socket > 0){
+					pollfds[nfds].fd = users[i].socket;
 					pollfds[nfds].events = POLLIN;
 					pollfds[nfds].revents = 0;
 					nfds++;
@@ -97,14 +97,14 @@ int main()
 						if(j == 0){
 							int i =0;
 							for(i=0;i<MAX_USERS;i++){
-								if(users[i].socketClient == 0){
-									users[i].socketClient = accept(socketEcoute,(struct sockaddr *)&pointDeRencontreDistant, & longueurAdresse);
+								if(users[i].socket == 0){
+									users[i].socket = accept(socketEcoute,(struct sockaddr *)&pointDeRencontreDistant, & longueurAdresse);
 
 									snprintf(users[i].login,50, "user %d",i+1) ;
 									printf("%s s'est connecté\n\n",users[i].login) ;
-									if(users[i].socketClient < 0){
+									if(users[i].socket < 0){
 										perror("accept");
-										close(users[i].socketClient);
+										close(users[i].socket);
 										close(socketEcoute);
 										exit(-4);
 									}
@@ -113,24 +113,24 @@ int main()
 							}
 							if(i == MAX_USERS)
 							{
-								close(users[i].socketClient);
+								close(users[i].socket);
 								printf("Max d'utilisateur atteint");
 								break;
 							}
 						}
 			else {
 				for(int i=0; i<MAX_USERS;i++){
-					if(pollfds[j].fd == users[i].socketClient){
-						lus = read(users[i].socketClient,messageRecu,LG_MESSAGE*sizeof(char));
+					if(pollfds[j].fd == users[i].socket){
+						lus = read(users[i].socket,messageRecu,LG_MESSAGE*sizeof(char));
 						switch(lus){
 							case -1:
 								perror("read");
-								close(users[i].socketClient);
+								close(users[i].socket);
 								exit(-5);
 							case 0 :
 								fprintf(stderr,"%s s'est déconecté\n\n");
-								close(users[i].socketClient);
-								users[i].socketClient = 0;
+								close(users[i].socket);
+								users[i].socket = 0;
 							default:
 								printf("Message reçu de %s: %s (%d octets)\n\n",users[i].login,messageRecu,lus);
 							}
