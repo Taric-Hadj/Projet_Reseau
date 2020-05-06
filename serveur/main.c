@@ -71,20 +71,12 @@ int main()
 	// boucle d'attente de connexion : en théorie, un serveur attend indéfiniment !
 	while(1)
 	{
-		int nevents;
-    int nfds = 0, who = -1;
-    // Liste des sockets à écouter
-    // socketEcoute + users[].socket => pollfds[]
-    pollfds[nfds].fd = socketEcoute;
-    pollfds[nfds].events = POLLIN;
-    pollfds[nfds].revents = 0;
-    nfds++;
-    for(int i = 0; i < MAX_USERS; i++) {
-      if(users[i].socketClient > 0) {
-        pollfds[nfds].fd = users[i].socketClient;
-        pollfds[nfds].events = POLLIN;
-        pollfds[nfds].revents = 0;
-        nfds++;
+		int nevents, i, j;
+		int nfds = 0;
+
+		// Liste des sockets à écouter
+		// socketEcoute + users[].socket => pollfds[]
+
 		nevents = poll(pollfds, nfds, -1);
 		if (nevents > 0) {
 			//poll(poll_list, 2, -1);
