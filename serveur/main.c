@@ -72,7 +72,7 @@ int main()
 	while(1)
 	{
 		int nevents;
-    int nfds = 0, qui = -1;
+    int nfds = 0, who = -1;
     // Liste des sockets à écouter
     // socketEcoute + users[].socket => pollfds[]
     pollfds[nfds].fd = socketEcoute;
