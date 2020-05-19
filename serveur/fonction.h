@@ -1,8 +1,8 @@
 
-#define MAX_DIGIMON 10
+#define MAX_USERS 10
 #define MAX_LOGIN_SIZE 50
 
-struct Digimon{
+struct user{
     int socket;
     char login[MAX_LOGIN_SIZE];
 };

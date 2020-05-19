@@ -25,10 +25,14 @@ int main()
 	char messageRecu[LG_MESSAGE];  /* le message de la couche Application ! */
 	int ecrits, lus;			   /* nb d'octets ecrits et lus */
 	int retour;
-	struct Digimon Digimons[MAX_DIGIMON];
-	struct pollfd pollfds[MAX_DIGIMON + 1];
+	struct user users[MAX_USERS];
+	struct pollfd pollfds[MAX_USERS + 1];
 
+<<<<<<< HEAD
 	memset(Digimons, '\0', MAX_DIGIMON * sizeof(struct Digimon));
+=======
+	memset(users, '\0', MAX_USERS*sizeof(struct user));
+>>>>>>> parent of da7316a... mode digimon
 
 	// Crée un socket de communication
 	socketEcoute = socket(PF_INET, SOCK_STREAM, 0); /* 0 indique que l'on utilisera le protocole par défaut associé à SOCK_STREAM soit TCP */
@@ -83,6 +87,7 @@ int main()
 
 		for (int i = 0; i < MAX_DIGIMON; i++)
 		{
+<<<<<<< HEAD
 			if (Digimons[i].socket > 0)
 			{
 				pollfds[nfds].fd = Digimons[i].socket;
@@ -172,6 +177,70 @@ int main()
 								default:
 									printf("Message reçu de %s: %s (%d octets)\n\n", Digimons[i].login, messageRecu, lus);
 								}
+=======
+			int nevents,i,j;
+			int nfds = 0;
+
+			// Liste des sockets à écouter
+			// socketEcoute + users[].socket => pollfds[]
+			pollfds[nfds].fd = socketEcoute;
+			pollfds[nfds].events = POLLIN;
+			pollfds[nfds].revents = 0;
+			nfds++;
+
+			for(int i = 0 ; i<MAX_USERS;i++){
+				if(users[i].socket > 0){
+					pollfds[nfds].fd = users[i].socket;
+					pollfds[nfds].events = POLLIN;
+					pollfds[nfds].revents = 0;
+					nfds++;
+					}
+				}
+			nevents = poll(pollfds, nfds, -1);
+			if (nevents > 0) {
+				// parcours de pollfds[] à la recherche des revents != 0
+				for(int j =0;j< nfds;j++){
+					if(pollfds[j].revents != 0){
+						if(j == 0){
+							int i =0;
+							for(i=0;i<MAX_USERS;i++){
+								if(users[i].socket == 0){
+									users[i].socket = accept(socketEcoute,(struct sockaddr *)&pointDeRencontreDistant, & longueurAdresse);
+
+									snprintf(users[i].login,50, "user %d",i+1) ;
+									printf("%s s'est connecté\n\n",users[i].login) ;
+									if(users[i].socket < 0){
+										perror("accept");
+										close(users[i].socket);
+										close(socketEcoute);
+										exit(-4);
+									}
+									break;
+								}
+							}
+							if(i == MAX_USERS)
+							{
+								close(users[i].socket);
+								printf("Max d'utilisateur atteint");
+								break;
+							}
+						}
+			else {
+				for(int i=0; i<MAX_USERS;i++){
+					if(pollfds[j].fd == users[i].socket){
+						lus = read(users[i].socket,messageRecu,LG_MESSAGE*sizeof(char));
+						switch(lus){
+							case -1:
+								perror("read");
+								close(users[i].socket);
+								exit(-5);
+							case 0 :
+								fprintf(stderr,"%s s'est déconecté\n\n");
+								close(users[i].socket);
+								users[i].socket = 0;
+							default:
+								printf("Message reçu de %s: %s (%d octets)\n\n",users[i].login,messageRecu,lus);
+>>>>>>> parent of da7316a... mode digimon
 							}
 						}
 					}
@@ -179,12 +248,21 @@ int main()
 			}
 		}
 
+<<<<<<< HEAD
 		// si c'est la socket socketEcoute => accept() + création d'une nouvelle entrée dans la table Digimons[]
 		//
 		// sinon c'est une socket client => read() et gestion des erreurs pour le cas de la déconnexion
 		else
 		{
 			printf("poll() returned %d\n", nevents);
+=======
+				// si c'est la socket socketEcoute => accept() + création d'une nouvelle entrée dans la table users[]
+				//
+				// sinon c'est une socket client => read() et gestion des erreurs pour le cas de la déconnexion
+			else {
+				printf("poll() returned %d\n", nevents);
+			}
+>>>>>>> parent of da7316a... mode digimon
 		}
 	}
 
