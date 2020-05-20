@@ -151,29 +151,29 @@ int main()
 								if(strstr(messageRecu,"!version") != NULL)
 								{	
 									memset(messageEnvoi, 0x00, LG_MESSAGE*sizeof(char));
-									strcpy(messageEnvoi,"Version 1.0\n");
+									strcpy(messageEnvoi,"!version 1.0\n");
 									write(Digimons[i].socketClient, messageEnvoi, strlen(messageEnvoi));
 								}
 								else if(strstr(messageRecu,"!list") != NULL)
 								{
-									memset(messageEnvoi, 0x00, LG_MESSAGE*sizeof(char));
+									char sep=' ';
+									dprintf(Digimons[i].socketClient, "!list");
 									for(int k=0; k<MAX_DIGIMONS;k++)
 									{
 										if(Digimons[k].socketClient != 0)
 										{		
-											snprintf(list, 50, "digimon %d|",k+1);
-											strcat(messageEnvoi,list);
+											dprintf(Digimons[i].socketClient, "%cdigimon%d",sep,k+1);
+											sep='|';
 										}
 									}
-									strcat(messageEnvoi,"\n");
-									write(Digimons[i].socketClient, messageEnvoi, strlen(messageEnvoi));
+									dprintf(Digimons[i].socketClient,"\n");
 								}
-								else if(strstr(messageRecu,"!message") != NULL)
+								else if(strstr(messageRecu,"!msg") != NULL)
 								{
 									memset(messageEnvoi, 0x00, LG_MESSAGE*sizeof(char));
 									strcpy(messageEnvoi,messageRecu);
 									for(int k=9; k<15; k++)
-										messageEnvoi[k] = messageEnvoi[k+1];
+									messageEnvoi[k] = messageEnvoi[k+1];
 									messageEnvoi[15] = ':';	
 									messageEnvoi[14] = (char)(i+49);
 									write(Digimons[((int)messageRecu[15])-49].socketClient, messageEnvoi, strlen(messageEnvoi));
@@ -181,7 +181,7 @@ int main()
 								else
 								{
 									memset(messageEnvoi, 0x00, LG_MESSAGE*sizeof(char));
-									snprintf(messageEnvoi, 50, "digimon %d: ",i+1);
+									snprintf(messageEnvoi, 50, "digimon%d: ",i+1);
 									strcat(messageEnvoi,messageRecu);
 									for(int k=0; k<MAX_DIGIMONS;k++)
 									{
