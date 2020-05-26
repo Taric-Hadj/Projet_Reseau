@@ -205,7 +205,7 @@ int main()
 									}
 								}
 								else if (strncmp(messageRecu, "!help", 5) == 0){
-									strcmp(messageAcceuil,"!list\n !version\n !msg\n");
+									strcpy(messageAcceuil,"!list\n!version\n!msg\n");
 									write(Digimons[i].socketClient,messageAcceuil, strlen(messageAcceuil));
 								}
 								else
