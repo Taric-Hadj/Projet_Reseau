@@ -193,25 +193,14 @@ int main()
 													}
 													write(Digimons[k].socketClient, messageEnvoi, strlen(messageEnvoi));
 													break;
-												}
-												else if (strchr(dm, '*') != NULL)
-												{
-													snprintf(messageEnvoi, 256, "!msg %s", Digimons[i].login);
-													dm = strtok(NULL, " ");
-													while (dm != NULL)
-													{
-														strcat(messageEnvoi, " ");
-														strcat(messageEnvoi, dm);
-														dm = strtok(NULL, " ");
-													}
-													write(Digimons[k].socketClient, messageEnvoi, strlen(messageEnvoi));
+												
 												}
 											}
 										}
 									}
 									if (strcmp(messageEnvoi, "") == 0)
 									{
-										strcpy(messageEnvoi, "<error> Destinataire non disponible ou n'existe pas\n");
+										strcpy(messageEnvoi, "71 Destinataire non disponible ou n'existe pas\n");
 										write(Digimons[i].socketClient, messageEnvoi, strlen(messageEnvoi));
 									}
 								}
