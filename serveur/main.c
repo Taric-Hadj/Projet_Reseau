@@ -170,32 +170,49 @@ int main()
 									}
 									dprintf(Digimons[i].socketClient, "\n");
 								}
-								else if (strstr(messageRecu, "!msg") != NULL)
+								else if (strncmp(messageRecu, "!msg", 9) == 0)
 								{
-									for (int k; k < MAX_DIGIMONS; k++)
+									for (int k = 0; k < MAX_DIGIMONS; k++)
 									{
-										if (k != i)
+										if (Digimons[k].socketClient != 0)
 										{
-											if (Digimons[k].socketClient != 0)
+											if (i != k)
 											{
 												strcpy(messageAcceuil, messageRecu);
 												strtok(messageAcceuil, " ");
 												dm = strtok(NULL, " ");
-												printf("cioucoucouocuoc");
-												if (strstr(dm,Digimons[k].login) != NULL)
+												if (strstr(dm, Digimons[k].login) != NULL)
 												{
-													snprintf(messageEnvoi,"!msg %s", Digimons[i].login);
-													dm = strtok(NULL," ");
-														while (dm!=NULL)
-														{
-															strcat(messageEnvoi," ");
-															strcat(messageEnvoi,dm);
-															dm =strtok(NULL," "); 
-														}
-														write(Digimons[k].socketClient, messageEnvoi,strlen(messageEnvoi));
+													snprintf(messageEnvoi, 256, "!msg %s", Digimons[i].login);
+													dm = strtok(NULL, " ");
+													while (dm != NULL)
+													{
+														strcat(messageEnvoi, " ");
+														strcat(messageEnvoi, dm);
+														dm = strtok(NULL, " ");
+													}
+													write(Digimons[k].socketClient, messageEnvoi, strlen(messageEnvoi));
+													break;
+												}
+												else if (strchr(dm, '*') != NULL)
+												{
+													snprintf(messageEnvoi, 256, "!msg %s", Digimons[i].login);
+													dm= strtok(NULL, " ");
+													while (dm != NULL)
+													{
+														strcat(messageEnvoi, " ");
+														strcat(messageEnvoi, dm);
+														dm = strtok(NULL, " ");
+													}
+													write(Digimons[k].socketClient, messageEnvoi, strlen(messageEnvoi));
 												}
 											}
 										}
+									}
+									if (strcmp(messageEnvoi, "") == 0)
+									{
+										strcpy(messageEnvoi, "<error> Destinataire non disponible ou n'existe pas\n");
+										write(Digimons[i].socketClient, messageEnvoi, strlen(messageEnvoi));
 									}
 								}
 								else
