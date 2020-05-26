@@ -116,7 +116,7 @@ int main()
 								{
 									if (Digimons[k].socketClient != 0)
 									{
-										snprintf(messageAcceuil, 50, "bienvenue digimon%d\n", i + 1);
+										snprintf(messageAcceuil, 50, "!hello digimon%d\n", i + 1);
 										ecrits = write(Digimons[k].socketClient, messageAcceuil, strlen(messageAcceuil));
 										if (ecrits == -1)
 										{
@@ -170,7 +170,7 @@ int main()
 									}
 									dprintf(Digimons[i].socketClient, "\n");
 								}
-								else if (strncmp(messageRecu, "!msg", 9) == 0)
+								else if (strncmp(messageRecu, "!msg", 4) == 0)
 								{
 									for (int k = 0; k < MAX_DIGIMONS; k++)
 									{
@@ -197,7 +197,7 @@ int main()
 												else if (strchr(dm, '*') != NULL)
 												{
 													snprintf(messageEnvoi, 256, "!msg %s", Digimons[i].login);
-													dm= strtok(NULL, " ");
+													dm = strtok(NULL, " ");
 													while (dm != NULL)
 													{
 														strcat(messageEnvoi, " ");
@@ -214,6 +214,10 @@ int main()
 										strcpy(messageEnvoi, "<error> Destinataire non disponible ou n'existe pas\n");
 										write(Digimons[i].socketClient, messageEnvoi, strlen(messageEnvoi));
 									}
+								}
+								else if (strncmp(messageRecu, "!help", 5) == 0){
+									strcmp(messageAcceuil,"!list\n ");
+									write(Digimons[i].socketClient,messageAcceuil, strlen(messageAcceuil));
 								}
 								else
 								{
